@@ -105,6 +105,8 @@
                     </h2>
                   </a>
                 </div>
+                {%- when 'quantity_breaks' -%}
+              {% render 'quantity-breaks', block: block, product: product, product_form_id: product_form_id %}
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
@@ -744,6 +746,7 @@
   "tag": "section",
   "class": "section",
   "blocks": [
+    
     {
       "type": "@app"
     },
@@ -2086,7 +2089,183 @@
           "info": "t:sections.main-product.blocks.icon_with_text.settings.heading.info"
         }
       ]
+    },
+
+    {
+      "type": "quantity_breaks",
+      "name": "Quantity Breaks",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "header",
+          "content": "General"
+        },
+        {
+          "type": "text",
+          "id": "headline",
+          "label": "Heading",
+          "default": "Buy More & Save"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "vertical", "label": "Vertical" },
+            { "value": "horizontal", "label": "Horizontal" }
+          ],
+          "default": "vertical"
+        },
+        {
+          "type": "color_scheme",
+          "id": "color_scheme",
+          "label": "Color Scheme",
+          "default": "scheme-1"
+        },
+        {
+          "type": "checkbox",
+          "id": "update_prices",
+          "label": "Update product price when selected",
+          "default": true
+        },
+        {
+          "type": "header",
+          "content": "Option 1"
+        },
+        {
+          "type": "number",
+          "id": "option_1_quantity",
+          "label": "Quantity",
+          "default": 1
+        },
+        {
+          "type": "text",
+          "id": "option_1_label",
+          "label": "Label",
+          "default": "Buy 1"
+        },
+        {
+          "type": "text",
+          "id": "option_1_badge",
+          "label": "Badge Text"
+        },
+        {
+          "type": "text",
+          "id": "option_1_percentage_off_text",
+          "label": "Percentage Off",
+          "default": "0"
+        },
+        {
+          "type": "text",
+          "id": "option_1_fixed_amount_off",
+          "label": "Fixed Amount Off",
+          "default": "0"
+        },
+        {
+          "type": "header",
+          "content": "Option 2"
+        },
+        {
+          "type": "number",
+          "id": "option_2_quantity",
+          "label": "Quantity",
+          "default": 2
+        },
+        {
+          "type": "text",
+          "id": "option_2_label",
+          "label": "Label",
+          "default": "Buy 2"
+        },
+        {
+          "type": "text",
+          "id": "option_2_badge",
+          "label": "Badge Text",
+          "default": "Most Popular"
+        },
+        {
+          "type": "text",
+          "id": "option_2_percentage_off_text",
+          "label": "Percentage Off",
+          "default": "10"
+        },
+        {
+          "type": "text",
+          "id": "option_2_fixed_amount_off",
+          "label": "Fixed Amount Off",
+          "default": "0"
+        },
+        {
+          "type": "header",
+          "content": "Option 3"
+        },
+        {
+          "type": "number",
+          "id": "option_3_quantity",
+          "label": "Quantity",
+          "default": 3
+        },
+        {
+          "type": "text",
+          "id": "option_3_label",
+          "label": "Label",
+          "default": "Buy 3"
+        },
+        {
+          "type": "text",
+          "id": "option_3_badge",
+          "label": "Badge Text",
+          "default": "Best Value"
+        },
+        {
+          "type": "text",
+          "id": "option_3_percentage_off_text",
+          "label": "Percentage Off",
+          "default": "20"
+        },
+        {
+          "type": "text",
+          "id": "option_3_fixed_amount_off",
+          "label": "Fixed Amount Off",
+          "default": "0"
+        },
+        {
+          "type": "header",
+          "content": "Option 4"
+        },
+        {
+          "type": "number",
+          "id": "option_4_quantity",
+          "label": "Quantity",
+          "default": 0
+        },
+        {
+          "type": "text",
+          "id": "option_4_label",
+          "label": "Label",
+          "default": "Buy 4"
+        },
+        {
+          "type": "text",
+          "id": "option_4_badge",
+          "label": "Badge Text"
+        },
+        {
+          "type": "text",
+          "id": "option_4_percentage_off_text",
+          "label": "Percentage Off",
+          "default": "0"
+        },
+        {
+          "type": "text",
+          "id": "option_4_fixed_amount_off",
+          "label": "Fixed Amount Off",
+          "default": "0"
+        }
+      ]
     }
+
+
   ],
   "settings": [
     {
@@ -2263,6 +2442,10 @@
       "label": "t:sections.all.padding.padding_bottom",
       "default": 36
     }
+
+    
   ]
+
+  
 }
 {% endschema %}

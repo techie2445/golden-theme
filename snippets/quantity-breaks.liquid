@@ -1,0 +1,95 @@
+{% comment %}
+  Renders quantity breaks component
+  Accepts:
+  - block: {Object} Section block object
+  - product: {Object} Product object
+  - product_form_id: {String} ID of the product form
+{% endcomment %}
+
+{% liquid
+  assign item_count = 0
+  if block.settings.option_1_quantity != 0
+    assign item_count = item_count | plus: 1
+  endif
+  if block.settings.option_2_quantity != 0
+    assign item_count = item_count | plus: 1
+  endif
+  if block.settings.option_3_quantity != 0
+    assign item_count = item_count | plus: 1
+  endif
+  if block.settings.option_4_quantity != 0
+    assign item_count = item_count | plus: 1
+  endif
+
+  assign has_variants = false
+  unless product.has_only_default_variant
+    assign has_variants = true
+  endunless
+%}
+
+<quantity-breaks
+  class="quantity-breaks quantity-breaks--{{ block.settings.style }} accent-color-{{ block.settings.color_scheme }}"
+  id="quantity-breaks-{{ section.id }}"
+  data-section="{{ section.id }}"
+  data-update-prices="{{ block.settings.update_prices }}"
+  data-form-id="{{ product_form_id }}"
+  style="--column-gap: 10px; --row-gap: 10px;"
+>
+  {% if block.settings.headline != blank %}
+    <h3 class="quantity-breaks__title">{{ block.settings.headline }}</h3>
+  {% endif %}
+
+  <div class="quantity-breaks-container">
+    {% for i in (1..4) %}
+      {% capture qty_key %}option_{{ i }}_quantity{% endcapture %}
+      {% capture badge_key %}option_{{ i }}_badge{% endcapture %}
+      {% capture label_key %}option_{{ i }}_label{% endcapture %}
+      {% capture percent_key %}option_{{ i }}_percentage_off_text{% endcapture %}
+      {% capture fixed_key %}option_{{ i }}_fixed_amount_off{% endcapture %}
+      
+      {% assign qty = block.settings[qty_key] %}
+      
+      {% if qty > 0 %}
+        {% liquid
+          assign price = product.selected_or_first_available_variant.price
+          assign percent_off = block.settings[percent_key] | plus: 0
+          assign fixed_off = block.settings[fixed_key] | times: 100
+          
+          # Simple logic: Price * Quantity * (1 - Percent/100) - FixedAmount
+          assign multiplier = 100 | minus: percent_off | divided_by: 100.0
+          assign total_price = price | times: qty | times: multiplier | minus: fixed_off
+          assign price_each = total_price | divided_by: qty
+        %}
+
+        <input
+          type="radio"
+          id="Quantity-Break-{{ section.id }}-{{ i }}"
+          name="quantity-break-selection"
+          value="{{ qty }}"
+          data-input-id="quantity-{{ section.id }}"
+          class="visually-hidden"
+          {% if i == 1 %}checked{% endif %}
+        >
+        <label for="Quantity-Break-{{ section.id }}-{{ i }}" class="quantity-break-item color-{{ block.settings.color_scheme }}">
+          {% if block.settings[badge_key] != blank %}
+            <span class="quantity-break-item__badge">{{ block.settings[badge_key] }}</span>
+          {% endif %}
+          
+          <div class="quantity-break-item__content">
+            <span class="quantity-break-item__label">
+              {{ block.settings[label_key] | replace: '[quantity]', qty }}
+            </span>
+            <div class="quantity-break-item__price">
+               <span class="price-each">{{ price_each | money }}</span>
+               <span class="price-total">Total: {{ total_price | money }}</span>
+            </div>
+          </div>
+        </label>
+      {% endif %}
+    {% endfor %}
+  </div>
+  
+  <input type="hidden" name="quantity" id="quantity-{{ section.id }}" value="1" form="{{ product_form_id }}">
+</quantity-breaks>
+
+<script src="{{ 'component-quantity-breaks.js' | asset_url }}" defer="defer"></script>
