@@ -144,33 +144,38 @@
       const stickyBtn = document.getElementById('StickyATCButton');
       if (!sticky || !stickyBtn) return;
 
-      // 1. Find the main product form
+      // 1. Find the <product-form> container (Common in Dawn)
       const productFormEl =
         document.querySelector('product-form[data-section-id*="__main"]') ||
         document.querySelector('product-form.product-form') ||
-        document.querySelector('form[action="/cart/add"]');
+        document.querySelector('form[action*="/cart/add"]'); // Fallback for standard forms
 
       if (!productFormEl) return;
 
-      // 2. Find the main ATC button to sync with
+      // 2. Identify the ACTUAL form ID to link inputs that are outside the form tag
+      let formId = productFormEl.getAttribute('id');
+      const internalForm = productFormEl.querySelector('form');
+      if (internalForm) {
+        formId = internalForm.getAttribute('id');
+      }
+
+      // 3. Find the main ATC button
       const mainAtcBtn =
         productFormEl.querySelector('button[name="add"].product-form__submit') ||
         productFormEl.querySelector('button[name="add"]');
 
       if (!mainAtcBtn) return;
 
-      // 3. Find the footer to determine when to hide/show
       const footerEl =
         document.querySelector('footer') ||
         document.getElementById('shopify-section-footer') ||
         document.querySelector('[id*="shopify-section-"][id*="footer"]');
 
-      // Helper: Sync text and disabled state
+      // Sync Label & Disabled State
       const syncState = () => {
         const label = (mainAtcBtn.innerText || '').replace(/\s+/g, ' ').trim();
         const mainDisabled = mainAtcBtn.hasAttribute('disabled') || mainAtcBtn.disabled;
-
-        // Use Schema text if custom text is provided, otherwise mirror main button
+        
         {% if section.settings.custom_btn_text != blank %}
           const customLabel = "{{ section.settings.custom_btn_text }}";
           stickyBtn.textContent = mainDisabled ? label : customLabel;
@@ -182,57 +187,51 @@
         stickyBtn.setAttribute('aria-disabled', stickyBtn.disabled ? 'true' : 'false');
       };
 
-      // Run once on load
       syncState();
-
-      // Watch for changes on the main button (e.g. variant change = sold out)
       const mo = new MutationObserver(syncState);
       mo.observe(mainAtcBtn, { attributes: true, childList: true, subtree: true });
 
-      // Toggle visibility based on scroll position (when footer is visible)
-      if (footerEl && 'IntersectionObserver' in window) {
-        const io = new IntersectionObserver(
-          (entries) => {
-            // Logic: Hide when footer is visible (entries[0].isIntersecting)
-            // But usually, sticky bars show *after* header and hide *at* footer?
-            // The prompt logic was: sticky.hidden = !entries[0].isIntersecting; (Show ONLY at footer)
-            // NOTE: Standard UX is usually "Show always until footer".
-            // I will assume you want it visible while scrolling content, but perhaps hide if it overlaps footer?
-            // Reverting to common Sticky ATC behavior: Show when main ATC scrolls out of view.
-
-            // Let's watch the Main ATC button instead. When IT goes out of view, show Sticky.
-            // But sticking to your prompt logic about Footer:
-             if (entries[0].isIntersecting) {
-               // Footer is visible -> Hide Sticky so it doesn't overlap?
-               // Or Show it? Your code said "Show ONLY when footer is visible" which is unusual.
-               // I will implement standard behavior: Show when user scrolls down.
-             }
-          },
-          { root: null, threshold: 0 }
-        );
-        // We will use scroll listener for simplicity and standard behavior
-      }
-
-      // Standard Sticky Logic: Show when scrolled past 300px
+      // Scroll Visibility Logic
       const handleScroll = () => {
-        const scrolled = window.scrollY > 400;
+        const scrolled = window.scrollY > 400; // Show after scrolling down 400px
         if (scrolled) {
           sticky.removeAttribute('hidden');
         } else {
           sticky.setAttribute('hidden', '');
         }
       };
-
+      
       window.addEventListener('scroll', handleScroll, { passive: true });
-      handleScroll(); // check on init
+      handleScroll();
 
-      // Handle Click: Proxy click to real button
+      // --- MAIN CLICK HANDLER ---
       stickyBtn.addEventListener('click', function () {
         syncState();
         if (stickyBtn.disabled) {
+           // If sold out, scroll user to main area
            productFormEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
            return;
         }
+
+        // === UPDATED SYNC LOGIC ===
+        if (formId) {
+           // 1. Find the currently selected radio button for quantity (globally by form ID)
+           const selectedRadio = document.querySelector(`input[name="quantity"][type="radio"][form="${formId}"]:checked`);
+           
+           // 2. Find the main number input (globally by form ID or inside form)
+           const mainInput = document.querySelector(`input[name="quantity"][type="number"][form="${formId}"]`) || 
+                             productFormEl.querySelector('input[name="quantity"][type="number"]');
+
+           // 3. If we have both, force the number input to match the radio button
+           if (selectedRadio && mainInput) {
+               mainInput.value = selectedRadio.value;
+               // Dispatch events so theme JS detects the change
+               mainInput.dispatchEvent(new Event('change', { bubbles: true }));
+               mainInput.dispatchEvent(new Event('input', { bubbles: true }));
+           }
+        }
+        // ==========================
+
         mainAtcBtn.click();
       });
     })();
