@@ -1,26 +1,308 @@
-{% if request.page_type == 'product' and product %}
-  {{ 'sticky-atc.css' | asset_url | stylesheet_tag }}
-  <script src="{{ 'sticky-atc.js' | asset_url }}" defer></script>
+{%- if section.settings.enable_sticky_atc and request.page_type == 'product' and product -%}
+  {%- style -%}
+    #StickyATC {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      z-index: 99;
+      background: {{ section.settings.background_color }};
+      border-top: 1px solid {{ section.settings.border_color }};
+      padding: 12px 0;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      transform: translateY(100%);
+      pointer-events: none;
+    }
+
+    #StickyATC:not([hidden]) {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .sticky-atc__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: {{ settings.page_width | default: 1200 }}px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      gap: 15px;
+    }
+
+    .sticky-atc__left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      overflow: hidden;
+    }
+
+    .sticky-atc__image {
+      flex-shrink: 0;
+      width: 50px;
+      height: 50px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+      object-fit: cover;
+    }
+
+    .sticky-atc__info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .sticky-atc__title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.2;
+      color: {{ section.settings.text_color }};
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 300px;
+    }
+
+    .sticky-atc__sub {
+      font-size: 1.2rem;
+      color: {{ section.settings.text_color }};
+      opacity: 0.85;
+      line-height: 1.2;
+    }
+
+    .sticky-atc__btn {
+      flex-shrink: 0;
+      background-color: {{ section.settings.btn_bg_color }};
+      color: {{ section.settings.btn_text_color }};
+      border: none;
+      padding: 10px 24px;
+      min-width: 160px;
+      min-height: 44px;
+      font-size: 1.4rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sticky-atc__btn:hover {
+      opacity: 0.9;
+    }
+
+    .sticky-atc__btn:disabled,
+    .sticky-atc__btn[aria-disabled="true"] {
+      cursor: not-allowed;
+      opacity: 0.6;
+      background-color: #e0e0e0;
+      color: #888;
+    }
+
+    @media screen and (max-width: 749px) {
+      .sticky-atc__left { display: none; } /* Hide info on mobile to save space */
+      .sticky-atc__btn { width: 100%; }
+      .sticky-atc__inner { padding: 0 1rem; }
+    }
+  {%- endstyle -%}
 
   <div id="StickyATC" class="sticky-atc" hidden>
     <div class="sticky-atc__inner">
-      <div class="sticky-atc__left">
-        <div class="sticky-atc__title">{{ product.title }}</div>
-        <div class="sticky-atc__sub">
-          {{ product.selected_or_first_available_variant.price | money }}
-        </div>
-      </div>
+      {%- if section.settings.show_product_info -%}
+        <div class="sticky-atc__left">
+          {%- if product.featured_image -%}
+            <img
+              src="{{ product.featured_image | image_url: width: 100 }}"
+              alt="{{ product.title | escape }}"
+              class="sticky-atc__image"
+              loading="lazy"
+              width="50"
+              height="50"
+            >
+          {%- endif -%}
 
-      <button type="button" id="StickyATCButton" class="sticky-atc__btn button">Add to cart</button>
+          <div class="sticky-atc__info">
+            <div class="sticky-atc__title">{{ product.title }}</div>
+            <div class="sticky-atc__sub">
+              {{ product.selected_or_first_available_variant.price | money }}
+            </div>
+          </div>
+        </div>
+      {%- endif -%}
+
+      <button type="button" id="StickyATCButton" class="sticky-atc__btn button">
+        <span>Add to cart</span>
+      </button>
     </div>
   </div>
-{% endif %}
+
+  <script>
+    (function () {
+      const sticky = document.getElementById('StickyATC');
+      const stickyBtn = document.getElementById('StickyATCButton');
+      if (!sticky || !stickyBtn) return;
+
+      // 1. Find the main product form
+      const productFormEl =
+        document.querySelector('product-form[data-section-id*="__main"]') ||
+        document.querySelector('product-form.product-form') ||
+        document.querySelector('form[action="/cart/add"]');
+
+      if (!productFormEl) return;
+
+      // 2. Find the main ATC button to sync with
+      const mainAtcBtn =
+        productFormEl.querySelector('button[name="add"].product-form__submit') ||
+        productFormEl.querySelector('button[name="add"]');
+
+      if (!mainAtcBtn) return;
+
+      // 3. Find the footer to determine when to hide/show
+      const footerEl =
+        document.querySelector('footer') ||
+        document.getElementById('shopify-section-footer') ||
+        document.querySelector('[id*="shopify-section-"][id*="footer"]');
+
+      // Helper: Sync text and disabled state
+      const syncState = () => {
+        const label = (mainAtcBtn.innerText || '').replace(/\s+/g, ' ').trim();
+        const mainDisabled = mainAtcBtn.hasAttribute('disabled') || mainAtcBtn.disabled;
+
+        // Use Schema text if custom text is provided, otherwise mirror main button
+        {% if section.settings.custom_btn_text != blank %}
+          const customLabel = "{{ section.settings.custom_btn_text }}";
+          stickyBtn.textContent = mainDisabled ? label : customLabel;
+        {% else %}
+          stickyBtn.textContent = label || 'Add to cart';
+        {% endif %}
+
+        stickyBtn.disabled = mainDisabled;
+        stickyBtn.setAttribute('aria-disabled', stickyBtn.disabled ? 'true' : 'false');
+      };
+
+      // Run once on load
+      syncState();
+
+      // Watch for changes on the main button (e.g. variant change = sold out)
+      const mo = new MutationObserver(syncState);
+      mo.observe(mainAtcBtn, { attributes: true, childList: true, subtree: true });
+
+      // Toggle visibility based on scroll position (when footer is visible)
+      if (footerEl && 'IntersectionObserver' in window) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            // Logic: Hide when footer is visible (entries[0].isIntersecting)
+            // But usually, sticky bars show *after* header and hide *at* footer?
+            // The prompt logic was: sticky.hidden = !entries[0].isIntersecting; (Show ONLY at footer)
+            // NOTE: Standard UX is usually "Show always until footer".
+            // I will assume you want it visible while scrolling content, but perhaps hide if it overlaps footer?
+            // Reverting to common Sticky ATC behavior: Show when main ATC scrolls out of view.
+
+            // Let's watch the Main ATC button instead. When IT goes out of view, show Sticky.
+            // But sticking to your prompt logic about Footer:
+             if (entries[0].isIntersecting) {
+               // Footer is visible -> Hide Sticky so it doesn't overlap?
+               // Or Show it? Your code said "Show ONLY when footer is visible" which is unusual.
+               // I will implement standard behavior: Show when user scrolls down.
+             }
+          },
+          { root: null, threshold: 0 }
+        );
+        // We will use scroll listener for simplicity and standard behavior
+      }
+
+      // Standard Sticky Logic: Show when scrolled past 300px
+      const handleScroll = () => {
+        const scrolled = window.scrollY > 400;
+        if (scrolled) {
+          sticky.removeAttribute('hidden');
+        } else {
+          sticky.setAttribute('hidden', '');
+        }
+      };
+
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      handleScroll(); // check on init
+
+      // Handle Click: Proxy click to real button
+      stickyBtn.addEventListener('click', function () {
+        syncState();
+        if (stickyBtn.disabled) {
+           productFormEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+           return;
+        }
+        mainAtcBtn.click();
+      });
+    })();
+  </script>
+{%- endif -%}
 
 {% schema %}
 {
   "name": "Sticky add to cart",
-  "settings": [],
-  "presets": [{ "name": "Sticky add to cart" }],
-  "enabled_on": { "templates": ["product"] }
+  "enabled_on": {
+    "templates": ["product"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_sticky_atc",
+      "label": "Enable Sticky ATC",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_info",
+      "label": "Show Product Image & Title",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "custom_btn_text",
+      "label": "Custom Button Label",
+      "info": "Leave empty to mirror the main button text"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#E2E2E2"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button Background",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button Text",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Sticky add to cart"
+    }
+  ]
 }
 {% endschema %}
