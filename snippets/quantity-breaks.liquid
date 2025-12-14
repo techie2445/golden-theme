@@ -20,18 +20,12 @@
   if block.settings.option_4_quantity != 0
     assign item_count = item_count | plus: 1
   endif
-
-  assign has_variants = false
-  unless product.has_only_default_variant
-    assign has_variants = true
-  endunless
 %}
 
 <quantity-breaks
   class="quantity-breaks quantity-breaks--{{ block.settings.style }} accent-color-{{ block.settings.color_scheme }}"
   id="quantity-breaks-{{ section.id }}"
   data-section="{{ section.id }}"
-  data-update-prices="{{ block.settings.update_prices }}"
   data-form-id="{{ product_form_id }}"
   style="--column-gap: 10px; --row-gap: 10px;"
 >
@@ -64,9 +58,9 @@
         <input
           type="radio"
           id="Quantity-Break-{{ section.id }}-{{ i }}"
-          name="quantity-break-selection"
+          name="quantity" 
           value="{{ qty }}"
-          data-input-id="quantity-{{ section.id }}"
+          form="{{ product_form_id }}"
           class="visually-hidden"
           {% if i == 1 %}checked{% endif %}
         >
@@ -76,7 +70,7 @@
           {% endif %}
           
           <div class="quantity-break-item__content">
-            <span class="quantity-break-item__label">
+             <span class="quantity-break-item__label">
               {{ block.settings[label_key] | replace: '[quantity]', qty }}
             </span>
             <div class="quantity-break-item__price">
@@ -88,8 +82,6 @@
       {% endif %}
     {% endfor %}
   </div>
-  
-  <input type="hidden" name="quantity" id="quantity-{{ section.id }}" value="1" form="{{ product_form_id }}">
 </quantity-breaks>
 
 <script src="{{ 'component-quantity-breaks.js' | asset_url }}" defer="defer"></script>

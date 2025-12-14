@@ -2,26 +2,33 @@ if (!customElements.get('quantity-breaks')) {
   class QuantityBreaks extends HTMLElement {
     constructor() {
       super();
-      this.inputs = this.querySelectorAll('input[name="quantity-break-selection"]');
-      this.mainInput = this.querySelector('input[name="quantity"]');
-      this.productForm = document.getElementById(this.dataset.formId);
+      // Select inputs by the shared name "quantity"
+      this.inputs = this.querySelectorAll('input[name="quantity"]');
 
       this.inputs.forEach(input => {
         input.addEventListener('change', this.handleChange.bind(this));
       });
+      
+      // Initialize styling on load
+      this.updateClasses();
     }
 
     handleChange(event) {
-      const selectedQty = event.target.value;
-      if (this.mainInput) {
-        this.mainInput.value = selectedQty;
-      }
-      
-      // Update styling states
+      this.updateClasses();
+    }
+
+    updateClasses() {
+      // Remove 'is-selected' from all items
       this.querySelectorAll('.quantity-break-item').forEach(label => {
          label.classList.remove('is-selected');
       });
-      event.target.nextElementSibling.classList.add('is-selected');
+
+      // Add 'is-selected' to the label of the checked input
+      const checkedInput = this.querySelector('input[name="quantity"]:checked');
+      if (checkedInput) {
+        const label = this.querySelector(`label[for="${checkedInput.id}"]`);
+        if (label) label.classList.add('is-selected');
+      }
     }
   }
   customElements.define('quantity-breaks', QuantityBreaks);
