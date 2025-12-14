@@ -1,0 +1,45 @@
+.sticky-atc{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: #fff;
+  border-top: 1px solid rgba(0,0,0,.10);
+  box-shadow: 0 -10px 30px rgba(0,0,0,.10);
+  padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+}
+
+.sticky-atc__inner{
+  max-width: var(--page-width, 1200px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.sticky-atc__left{
+  min-width: 0;
+}
+
+.sticky-atc__title{
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sticky-atc__sub{
+  font-size: 13px;
+  opacity: .8;
+  margin-top: 2px;
+}
+
+.sticky-atc__btn{
+  white-space: nowrap;
+  padding: 12px 14px;
+  border-radius: 10px;
+}

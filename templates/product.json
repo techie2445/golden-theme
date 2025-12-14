@@ -1,1 +1,168 @@
-{"sections":{"main":{"type":"main-product","blocks":{"vendor":{"type":"text","settings":{"text":"{{ product.vendor }}","text_style":"uppercase"}},"title":{"type":"title","settings":{}},"price":{"type":"price","settings":{}},"variant_picker":{"type":"variant_picker","settings":{"picker_type":"button","swatch_shape":"circle"}},"quantity_selector":{"type":"quantity_selector","settings":{}},"buy_buttons":{"type":"buy_buttons","settings":{"show_dynamic_checkout":true,"show_gift_card_recipient":true}},"description":{"type":"description","settings":{}},"share":{"type":"share","settings":{"share_label":"Share"}}},"block_order":["vendor","title","price","variant_picker","quantity_selector","buy_buttons","description","share"],"settings":{"enable_sticky_info":true,"color_scheme":"scheme-1","media_size":"large","constrain_to_viewport":true,"media_fit":"contain","gallery_layout":"stacked","mobile_thumbnails":"hide","media_position":"left","image_zoom":"lightbox","hide_variants":true,"enable_video_looping":false,"padding_top":36,"padding_bottom":12}},"related-products":{"type":"related-products","disabled":true,"settings":{"heading":"You may also like","heading_size":"h2","products_to_show":4,"columns_desktop":4,"columns_mobile":"2","color_scheme":"scheme-1","image_ratio":"square","image_shape":"default","show_secondary_image":true,"show_vendor":false,"show_rating":false,"padding_top":36,"padding_bottom":28}},"scrolling_text_FDNiAx":{"type":"scrolling-text","blocks":{"text_bLKADA":{"type":"text","settings":{"text":"Free Shipping on All Orders","icon":"star"}},"text_TjBhDY":{"type":"text","settings":{"text":"Free Shipping on All Orders","icon":"star"}},"text_dKnGct":{"type":"text","settings":{"text":"Free Shipping on All Orders","icon":"star"}}},"block_order":["text_bLKADA","text_TjBhDY","text_dKnGct"],"name":"Scrolling Marquee","settings":{"color_scheme":"","text_color":"#000000","font_size":18,"font_weight":"600","speed":20,"direction":"left","pause_on_hover":true,"gap_size":40,"padding_top":20,"padding_bottom":20}},"comparison_slider_QXePWV":{"type":"comparison-slider","name":"Before & After Slider","settings":{"title":"See the Difference","text":"<p>Showcase the effectiveness of your products.<\/p>","heading_size":"h1","button_label":"","link":"","before_label":"Before","after_label":"After","layout":"slider_second","color_scheme":"background-1","padding_top":36,"padding_bottom":36}}},"order":["main","related-products","scrolling_text_FDNiAx","comparison_slider_QXePWV"]}
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "vendor": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.vendor }}",
+            "text_style": "uppercase"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button",
+            "swatch_shape": "circle"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true,
+            "show_gift_card_recipient": true
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        }
+      },
+      "block_order": [
+        "vendor",
+        "title",
+        "price",
+        "variant_picker",
+        "quantity_selector",
+        "buy_buttons",
+        "description",
+        "share"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "color_scheme": "scheme-1",
+        "media_size": "large",
+        "constrain_to_viewport": true,
+        "media_fit": "contain",
+        "gallery_layout": "stacked",
+        "mobile_thumbnails": "hide",
+        "media_position": "left",
+        "image_zoom": "lightbox",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 12
+      }
+    },
+    "related-products": {
+      "type": "related-products",
+      "disabled": true,
+      "settings": {
+        "heading": "You may also like",
+        "heading_size": "h2",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_mobile": "2",
+        "color_scheme": "scheme-1",
+        "image_ratio": "square",
+        "image_shape": "default",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "padding_top": 36,
+        "padding_bottom": 28
+      }
+    },
+    "scrolling_text_FDNiAx": {
+      "type": "scrolling-text",
+      "blocks": {
+        "text_bLKADA": {
+          "type": "text",
+          "settings": {
+            "text": "Free Shipping on All Orders",
+            "icon": "star"
+          }
+        },
+        "text_TjBhDY": {
+          "type": "text",
+          "settings": {
+            "text": "Free Shipping on All Orders",
+            "icon": "star"
+          }
+        },
+        "text_dKnGct": {
+          "type": "text",
+          "settings": {
+            "text": "Free Shipping on All Orders",
+            "icon": "star"
+          }
+        }
+      },
+      "block_order": [
+        "text_bLKADA",
+        "text_TjBhDY",
+        "text_dKnGct"
+      ],
+      "name": "Scrolling Marquee",
+      "settings": {
+        "color_scheme": "",
+        "text_color": "#000000",
+        "font_size": 18,
+        "font_weight": "600",
+        "speed": 20,
+        "direction": "left",
+        "pause_on_hover": true,
+        "gap_size": 40,
+        "padding_top": 20,
+        "padding_bottom": 20
+      }
+    },
+    "comparison_slider_QXePWV": {
+      "type": "comparison-slider",
+      "name": "Before & After Slider",
+      "settings": {
+        "title": "See the Difference",
+        "text": "<p>Showcase the effectiveness of your products.</p>",
+        "heading_size": "h1",
+        "button_label": "",
+        "link": "",
+        "before_label": "Before",
+        "after_label": "After",
+        "layout": "slider_second",
+        "color_scheme": "background-1",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "sticky_atc": {
+      "type": "sticky-atc",
+      "settings": {}
+    }
+  },
+  "order": [
+    "main",
+    "related-products",
+    "scrolling_text_FDNiAx",
+    "comparison_slider_QXePWV",
+    "sticky_atc"
+  ]
+}

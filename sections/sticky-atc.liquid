@@ -1,0 +1,26 @@
+{% if request.page_type == 'product' and product %}
+  {{ 'sticky-atc.css' | asset_url | stylesheet_tag }}
+  <script src="{{ 'sticky-atc.js' | asset_url }}" defer></script>
+
+  <div id="StickyATC" class="sticky-atc" hidden>
+    <div class="sticky-atc__inner">
+      <div class="sticky-atc__left">
+        <div class="sticky-atc__title">{{ product.title }}</div>
+        <div class="sticky-atc__sub">
+          {{ product.selected_or_first_available_variant.price | money }}
+        </div>
+      </div>
+
+      <button type="button" id="StickyATCButton" class="sticky-atc__btn button">Add to cart</button>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Sticky add to cart",
+  "settings": [],
+  "presets": [{ "name": "Sticky add to cart" }],
+  "enabled_on": { "templates": ["product"] }
+}
+{% endschema %}
