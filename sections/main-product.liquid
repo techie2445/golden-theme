@@ -87,6 +87,9 @@
 
           {%- for block in section.blocks -%}
             {%- case block.type -%}
+              {%- when 'rating_stars' -%}
+                {% render 'rating-stars-block', block: block %}
+
               {%- when '@app' -%}
                 {% render block %}
               {%- when 'text' -%}
@@ -105,8 +108,8 @@
                     </h2>
                   </a>
                 </div>
-                {%- when 'quantity_breaks' -%}
-              {% render 'quantity-breaks', block: block, product: product, product_form_id: product_form_id %}
+              {%- when 'quantity_breaks' -%}
+                {% render 'quantity-breaks', block: block, product: product, product_form_id: product_form_id %}
               {%- when 'price' -%}
                 <div id="price-{{ section.id }}" role="status" {{ block.shopify_attributes }}>
                   {%- render 'price',
@@ -746,7 +749,6 @@
   "tag": "section",
   "class": "section",
   "blocks": [
-    
     {
       "type": "@app"
     },
@@ -796,6 +798,7 @@
       "type": "sku",
       "name": "t:sections.main-product.blocks.sku.name",
       "limit": 1,
+
       "settings": [
         {
           "type": "select",
@@ -819,6 +822,117 @@
         }
       ]
     },
+
+    {
+      "type": "rating_stars",
+      "name": "Rating stars (Static)",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 0.1,
+          "default": 4.8
+        },
+        {
+          "type": "color",
+          "id": "star_color",
+          "default": "#ffcc00",
+          "label": "Stars color"
+        },
+        {
+          "type": "select",
+          "id": "bg_stars_style",
+          "options": [
+            {
+              "value": "outlined",
+              "label": "Outlined"
+            },
+            {
+              "value": "full",
+              "label": "Full"
+            }
+          ],
+          "label": "Background stars style",
+          "default": "full"
+        },
+        {
+          "type": "color",
+          "id": "bg_star_color",
+          "default": "#ececec",
+          "label": "Background stars color"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "label",
+          "label": "Text",
+          "default": "(2000+ Reviews)"
+        },
+        {
+          "type": "range",
+          "id": "size",
+          "min": 10,
+          "max": 24,
+          "step": 1,
+          "unit": "px",
+          "default": 16,
+          "label": "Text & Star size"
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Alignment",
+          "options": [
+            {
+              "value": "flex-start",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "flex-end",
+              "label": "Right"
+            }
+          ],
+          "default": "flex-start"
+        },
+        {
+          "type": "text",
+          "id": "scroll_id",
+          "label": "ID of the section to scroll to",
+          "info": "E.g., #shopify-product-reviews"
+        },
+        {
+          "type": "header",
+          "content": "Block margin"
+        },
+        {
+          "type": "range",
+          "id": "margin_top",
+          "min": 0,
+          "max": 30,
+          "step": 3,
+          "unit": "px",
+          "label": "Top margin",
+          "default": 15
+        },
+        {
+          "type": "range",
+          "id": "margin_bottom",
+          "min": 0,
+          "max": 30,
+          "step": 3,
+          "unit": "px",
+          "label": "Bottom margin",
+          "default": 15
+        }
+      ]
+    },
+
     {
       "type": "inventory",
       "name": "t:sections.main-product.blocks.inventory.name",
@@ -2264,8 +2378,6 @@
         }
       ]
     }
-
-
   ],
   "settings": [
     {
@@ -2442,10 +2554,6 @@
       "label": "t:sections.all.padding.padding_bottom",
       "default": 36
     }
-
-    
   ]
-
-  
 }
 {% endschema %}
