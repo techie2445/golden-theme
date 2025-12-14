@@ -1492,3 +1492,16 @@ a.product__text {
     border: none;
   }
 }
+.urgency-text {
+  margin-top: var(--margin-top);
+  margin-bottom: var(--margin-bottom);
+  font-size: 1.4rem;
+  line-height: 1.5;
+  display: block;
+}
+
+/* Optional: Ensure strong text stands out within the urgency block */
+.urgency-text strong {
+  font-weight: 700;
+  letter-spacing: 0.05rem;
+}
